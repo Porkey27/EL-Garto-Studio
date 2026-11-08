@@ -209,7 +209,7 @@ the IDs are below:
 
 JSON-RPC 2.0 over WebSocket on `127.0.0.1:<dynamic port>`. The port is written to
 `<appdata>/ws-info.json` as `{"port": N}` (on Linux:
-`~/.config/elgato-studio-linux/ws-info.json`). Methods: `getApplicationInfo`,
+`~/.config/El-Gato Studio/ws-info.json`). Methods: `getApplicationInfo`,
 `getRecordingInformation`, `setIsRecording`, `takeSnapshot`,
 `getLastRecordingItemInformation`, `openStorageLocation`, `getSignalInformation`,
 `getPreviewInformation`, `setPreviewInformation`, `getDevices`, `getSupportedProperties`,

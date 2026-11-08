@@ -63,7 +63,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: studio-for-elgato-${{ runner.os }}
+          name: el-gato-studio-${{ runner.os }}
           path: ${{ matrix.files }}
           if-no-files-found: error
 

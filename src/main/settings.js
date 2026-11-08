@@ -7,7 +7,7 @@ const os = require('os');
 const { EventEmitter } = require('events');
 
 const DEFAULTS = {
-  recordingsDir: path.join(os.homedir(), 'Videos', 'Elgato Studio'),
+  recordingsDir: path.join(os.homedir(), 'Videos', 'El-Gato Studio'),
   container: 'mp4',
   recMaxHeight: 0, // 0 = source
   recMaxFps: 0, // 0 = max

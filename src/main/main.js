@@ -23,7 +23,32 @@ const hdr = require('./hdr');
 app.commandLine.appendSwitch('enable-features', 'WebRTCPipeWireCapturer,VaapiVideoDecoder,VaapiVideoEncoder');
 
 // Windows groups taskbar buttons and picks their icon by this ID (matches build.appId).
-if (process.platform === 'win32') app.setAppUserModelId('io.github.elgato-studio-linux');
+if (process.platform === 'win32') app.setAppUserModelId('io.github.porkey27.el-gato-studio');
+// The app used to be called "Studio for Elgato" (and briefly "El-Gato"), and its data folder is named after the app. On the
+// first start after the rename, copy settings, themes and prompter scripts across (not caches).
+function migrateUserData() {
+  const now = app.getPath('userData');
+  const old = ['Studio for Elgato', 'El-Gato'].map((n) => path.join(app.getPath('appData'), n))
+    .find((d) => d !== now && fs.existsSync(path.join(d, 'settings.json')));
+  if (!old || fs.existsSync(path.join(now, 'settings.json'))) return;
+  const skip = new Set(['Cache', 'Code Cache', 'GPUCache', 'DawnGraphiteCache', 'DawnWebGPUCache', 'Crashpad', 'blob_storage',
+    'Shared Dictionary', 'SingletonLock', 'SingletonCookie', 'SingletonSocket', 'lockfile']);
+  try {
+    fs.mkdirSync(now, { recursive: true });
+    for (const entry of fs.readdirSync(old)) {
+      if (skip.has(entry)) continue;
+      try { fs.cpSync(path.join(old, entry), path.join(now, entry), { recursive: true, force: false }); } catch { /* skip files in use */ }
+    }
+    // The theme's background image lives in the data folder: point the saved theme at the copy.
+    const file = path.join(now, 'settings.json');
+    const text = fs.readFileSync(file, 'utf8');
+    fs.writeFileSync(file, text.split(pathToFileURL(old).href).join(pathToFileURL(now).href));
+    console.log(`Copied settings from ${old}`);
+  } catch (e) {
+    console.error(`Could not copy settings from ${old}: ${e.message}`);
+  }
+}
+migrateUserData();
 const userData = app.getPath('userData');
 const settings = new Settings(userData);
 const library = new Library(() => settings.get('recordingsDir'));
@@ -106,7 +131,7 @@ async function propertiesWithValues(s) {
 
 const api = {
   appInfo: () => ({
-    appID: 'studio-linux', operatingSystem: 'linux', name: 'Studio for Elgato (Linux)',
+    appID: 'studio-linux', operatingSystem: 'linux', name: 'El-Gato Studio',
     version: app.getVersion(), build: 0, interfaceRevision: 2,
   }),
   recordingInfo: () => {
@@ -246,7 +271,7 @@ const rpc = new StudioRpcServer(api, {
 function createMainWindow() {
   mainWindow = new BrowserWindow({
     width: 1280, height: 800, minWidth: 900, minHeight: 600, backgroundColor: '#111316',
-    title: 'Studio for Elgato', show: false, icon: appIcon() || undefined,
+    title: 'El-Gato Studio', show: false, icon: appIcon() || undefined,
     webPreferences: { preload: path.join(__dirname, '../preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: false },
   });
   mainWindow.removeMenu();
@@ -344,7 +369,7 @@ function createTray() {
     { type: 'separator' },
     { label: 'Quit', click: () => app.quit() },
   ]);
-  tray.setToolTip('Studio for Elgato');
+  tray.setToolTip('El-Gato Studio');
   tray.setContextMenu(menu());
   recorder.on('changed', () => tray && tray.setContextMenu(menu()));
 }
@@ -534,7 +559,7 @@ handle('theme:removeImage', () => {
 handle('theme:export', async (theme) => {
   const { filePath } = await dialog.showSaveDialog(mainWindow, { title: 'Export theme', defaultPath: 'Studio theme.json', filters: [{ name: 'Theme', extensions: ['json'] }] });
   if (!filePath) return null;
-  const out = { app: 'studio-for-elgato', type: 'theme', version: 1, theme: { ...theme } };
+  const out = { app: 'el-gato-studio', type: 'theme', version: 1, theme: { ...theme } };
   // Embed the image so the file is self-contained.
   if (theme.image && theme.image.url && theme.image.url.startsWith('file:')) {
     const file = fileURLToPath(theme.image.url);
@@ -550,7 +575,7 @@ handle('theme:import', async () => {
   let parsed;
   try { parsed = JSON.parse(fs.readFileSync(filePaths[0], 'utf8')); } catch { throw new Error('That file is not a theme'); }
   const theme = parsed && parsed.type === 'theme' ? parsed.theme : null;
-  if (!theme || typeof theme !== 'object') throw new Error('That file is not a Studio for Elgato theme');
+  if (!theme || typeof theme !== 'object') throw new Error('That file is not an El-Gato Studio theme');
   if (theme.image && theme.image.data) {
     const m = /^data:([\w/+.-]+);base64,(.+)$/.exec(theme.image.data);
     const ext = String(theme.image.ext || '').toLowerCase();
@@ -656,7 +681,7 @@ handle('recorder:snapshot', (png) => {
   return file;
 });
 ipcMain.on('flashback:segment', (_e, buf, dur) => recorder.flashbackSegment(buf, dur));
-handle('flashback:save', () => { const s = sessions.get(activeDeviceId); return recorder.saveFlashback(s ? s.device.name : 'Studio'); });
+handle('flashback:save', () => { const s = sessions.get(activeDeviceId); return recorder.saveFlashback(s ? s.device.name : 'El-Gato Studio'); });
 handle('flashback:clear', () => recorder.clearFlashback());
 handle('vcam:start', (dev, size) => recorder.startVirtualCamera(dev, size));
 ipcMain.on('vcam:chunk', (_e, buf) => recorder.virtualCameraChunk(buf));

@@ -1,4 +1,4 @@
-# Studio for Elgato — Linux and Windows
+# El-Gato Studio — Linux and Windows
 
 An unofficial app for Elgato capture cards, Facecams and the prompter, for **Linux and Windows**.
 It reimplements Elgato Studio 2.0 on each OS's own device APIs:
@@ -68,7 +68,7 @@ npm run build:native
 Let your user reach the devices without root:
 
 ```bash
-sudo cp udev/60-elgato-studio.rules /etc/udev/rules.d/ && sudo udevadm control --reload-rules && sudo udevadm trigger
+sudo cp udev/60-el-gato-studio.rules /etc/udev/rules.d/ && sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
 
 ```bash
@@ -82,7 +82,7 @@ npm run dist:linux
 ```
 
 Virtual microphone (optional): click **Virtual mic** under the preview, then pick
-"Studio Virtual Microphone" as the input in Discord, OBS or a browser. It carries the audio the
+"El-Gato Virtual Microphone" as the input in Discord, OBS or a browser. It carries the audio the
 app is using (the card's audio by default) and is removed when the app quits. It needs `pactl`
 (`sudo apt install pulseaudio-utils`; on PipeWire systems `pipewire-pulse` must be running, which
 it is by default on current distros).
@@ -90,7 +90,7 @@ it is by default on current distros).
 Virtual camera (optional):
 
 ```bash
-sudo modprobe v4l2loopback video_nr=10 card_label="Studio Virtual Camera" exclusive_caps=1
+sudo modprobe v4l2loopback video_nr=10 card_label="El-Gato Virtual Camera" exclusive_caps=1
 ```
 
 ## Features
@@ -104,7 +104,7 @@ sudo modprobe v4l2loopback video_nr=10 card_label="Studio Virtual Camera" exclus
 | Live | HDR recording: HDR inputs recorded as 10-bit HEVC Main 10 tagged HDR10/HLG (GPU encoder: AMD, NVIDIA or Intel, else x265), with an SDR preview while recording; SDR/HDR shown in the signal pop-up | — (planned) | ✅ tested (4K S, HDR source) |
 | Live | Signal path pop-up (input → card → recording format, audio) and device details (rename, serial, firmware, USB speed) | ✅ | ✅ |
 | Live | Virtual camera | ✅ v4l2loopback | — (use OBS Virtual Camera) |
-| Live | Virtual microphone: the app's audio as "Studio Virtual Microphone" for Discord, OBS and browsers | ✅ PulseAudio/PipeWire (`pactl`) | — |
+| Live | Virtual microphone: the app's audio as "El-Gato Virtual Microphone" for Discord, OBS and browsers | ✅ PulseAudio/PipeWire (`pactl`) | — |
 | Library | Thumbnails, playback, rename, show in folder, move to trash | ✅ | ✅ |
 | Cameras | Standard controls: exposure, shutter, gain, white balance, focus, zoom/pan/tilt, picture, anti-flicker | ✅ | ✅ |
 | Cameras | Elgato extras: vibrancy, tint, locks, metering, dynamic range, noise reduction, low light, status LED, "Save to camera" | ⚠️ unverified | ⚠️ unverified |
@@ -188,7 +188,7 @@ helpers:
 | File | What it is |
 |---|---|
 | `…-windows-setup.exe` | Windows installer |
-| `…-windows-portable.zip` | Windows, unpacked: extract and run `Studio for Elgato.exe` |
+| `…-windows-portable.zip` | Windows, unpacked: extract and run `El-Gato Studio.exe` |
 | `…-linux.AppImage` | Linux, one file that runs on most distros (`chmod +x`, then run) |
 | `…-linux-amd64.deb` | Debian/Ubuntu package (also installs the udev rule) |
 | `…-linux-x64.tar.gz` | Linux, unpacked |

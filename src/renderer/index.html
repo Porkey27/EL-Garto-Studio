@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' file: data: blob:; media-src 'self' file: blob: mediastream:; connect-src 'self' wss://irc-ws.chat.twitch.tv wss://ws-us2.pusher.com https://www.googleapis.com https://kick.com https://alphacephei.com; script-src 'self' 'wasm-unsafe-eval' blob:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'">
-  <title>Elgato Studio</title>
+  <title>El-Gato Studio</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div id="app">
     <nav id="sidebar">
-      <div class="brand">Studio</div>
+      <div class="brand">El-Gato<br>Studio</div>
       <button class="nav active" data-view="live" title="Live">Live</button>
       <button class="nav" data-view="library" title="Library">Library</button>
       <button class="nav" data-view="prompter" title="Prompter">Prompter</button>
@@ -157,7 +157,7 @@
           </div>
           <div class="group" id="vcam-settings">
             <h3>Virtual camera</h3>
-            <p class="small muted">Needs the <code>v4l2loopback</code> kernel module: <code>sudo modprobe v4l2loopback video_nr=10 card_label="Studio Virtual Camera" exclusive_caps=1</code></p>
+            <p class="small muted">Needs the <code>v4l2loopback</code> kernel module: <code>sudo modprobe v4l2loopback video_nr=10 card_label="El-Gato Virtual Camera" exclusive_caps=1</code></p>
             <label>Loopback device <select id="s-vcam"></select></label>
           </div>
           <div class="group">
