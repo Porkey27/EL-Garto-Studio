@@ -24,6 +24,7 @@ const DEFAULTS = {
   lastDeviceId: null,
   devicePresets: {},
   deviceNames: {},
+  theme: null, // see src/renderer/theme.js (null = the default dark theme)
   lastCustomEdid: {},
   framePresets: {},
   prompter: { fontSize: 64, speed: 3, mirror: false, lineHeight: 1.4, countdownSec: 3, fontFamily: 'sans-serif', margin: 10, cueLine: 0.33 },

@@ -6,6 +6,7 @@ import * as prompterUi from './prompter-ui.js';
 import * as recording from './recording.js';
 import * as popovers from './popovers.js';
 import * as firmware from './firmware.js';
+import * as themeUi from './theme-ui.js';
 
 const { studio } = window;
 
@@ -176,6 +177,7 @@ async function initSettings() {
 
 async function main() {
   settings = await studio.call('settings:all');
+  themeUi.init(settings.theme); // first, so the window never flashes the default colours
   live.setSettings(settings);
   recording.initPanel({
     settings,

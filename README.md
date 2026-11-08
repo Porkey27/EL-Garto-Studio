@@ -115,6 +115,7 @@ sudo modprobe v4l2loopback video_nr=10 card_label="Studio Virtual Camera" exclus
 | Capture cards | Firmware version, input signal (resolution/fps), USB 2.0 warning | ✅ | ✅ tested (4K S) |
 | Prompter | Script library and editor, .txt/.md/.rtf/.docx import, prompter window, mirror mode, chat overlay, VoiceSync | ✅ | ✅ |
 | Remote | Studio-compatible JSON-RPC WebSocket API (Stream Deck), tray, global shortcuts | ✅ | ✅ |
+| App | Themes (Settings → Appearance): 7 presets, custom colours, background image with fit/darken/blur and see-through panels, corner roundness, UI size, import/export | ✅ | ✅ |
 
 "Capture-verified" means the bytes the app sends match a USB capture of Elgato Studio doing the same
 thing, but this app hasn't yet sent them to a card on that OS.

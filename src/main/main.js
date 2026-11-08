@@ -3,6 +3,7 @@
 const { app, BrowserWindow, ipcMain, shell, dialog, Tray, Menu, nativeImage, globalShortcut, powerSaveBlocker, screen } = require('electron');
 const fs = require('fs');
 const path = require('path');
+const { pathToFileURL, fileURLToPath } = require('url');
 
 const { DeviceMonitor } = require('./devices/discovery');
 const { CameraController, CATEGORIES } = require('./devices/camera');
@@ -255,6 +256,10 @@ function createMainWindow() {
     dialog.showMessageBox(mainWindow, { type: 'warning', message: 'A firmware update is in progress.', detail: 'Wait until it finishes before closing the app. Closing now could leave the card needing a recovery update.' });
   });
   mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+  mainWindow.webContents.on('did-finish-load', () => {
+    const t = settings.get('theme');
+    if (t && t.uiScale) mainWindow.webContents.setZoomFactor(Math.max(0.7, Math.min(1.6, t.uiScale)));
+  });
   mainWindow.once('ready-to-show', () => mainWindow.show());
   if (process.env.EGS_SMOKE_TEST) {
     // CI/dev check: surface renderer errors on stdout and exit after load.
@@ -500,6 +505,66 @@ handle('firmware:update', async (id, opts = {}) => {
     if (keepAwakeId !== null && !recorder.isRecording) { powerSaveBlocker.stop(keepAwakeId); keepAwakeId = null; }
     send('devices:changed', [...sessions.values()].map((x) => deviceSummary(x.device)));
   }
+});
+
+// Themes. A chosen background image is copied into the app's data folder, so the theme keeps
+// working if the original is moved or deleted.
+const THEME_DIR = path.join(userData, 'theme');
+const IMAGE_TYPES = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', gif: 'image/gif', bmp: 'image/bmp', avif: 'image/avif' };
+function storeThemeImage(buf, ext) {
+  fs.mkdirSync(THEME_DIR, { recursive: true });
+  for (const f of fs.readdirSync(THEME_DIR)) if (f.startsWith('background')) fs.rmSync(path.join(THEME_DIR, f), { force: true });
+  const dest = path.join(THEME_DIR, `background-${Date.now()}.${ext}`);
+  fs.writeFileSync(dest, buf);
+  return pathToFileURL(dest).href;
+}
+handle('theme:chooseImage', async () => {
+  const { filePaths } = await dialog.showOpenDialog(mainWindow, { title: 'Choose a background image', properties: ['openFile'], filters: [{ name: 'Images', extensions: Object.keys(IMAGE_TYPES) }] });
+  if (!filePaths || !filePaths[0]) return null;
+  const ext = path.extname(filePaths[0]).slice(1).toLowerCase();
+  if (!IMAGE_TYPES[ext]) throw new Error('Unsupported image type');
+  const buf = fs.readFileSync(filePaths[0]);
+  if (buf.length > 50 * 1024 * 1024) throw new Error('That image is larger than 50 MB');
+  return storeThemeImage(buf, ext);
+});
+handle('theme:removeImage', () => {
+  if (fs.existsSync(THEME_DIR)) for (const f of fs.readdirSync(THEME_DIR)) if (f.startsWith('background')) fs.rmSync(path.join(THEME_DIR, f), { force: true });
+  return true;
+});
+handle('theme:export', async (theme) => {
+  const { filePath } = await dialog.showSaveDialog(mainWindow, { title: 'Export theme', defaultPath: 'Studio theme.json', filters: [{ name: 'Theme', extensions: ['json'] }] });
+  if (!filePath) return null;
+  const out = { app: 'studio-for-elgato', type: 'theme', version: 1, theme: { ...theme } };
+  // Embed the image so the file is self-contained.
+  if (theme.image && theme.image.url && theme.image.url.startsWith('file:')) {
+    const file = fileURLToPath(theme.image.url);
+    const ext = path.extname(file).slice(1).toLowerCase();
+    out.theme.image = { ...theme.image, url: null, data: `data:${IMAGE_TYPES[ext] || 'application/octet-stream'};base64,${fs.readFileSync(file).toString('base64')}`, ext };
+  }
+  fs.writeFileSync(filePath, JSON.stringify(out, null, 2));
+  return filePath;
+});
+handle('theme:import', async () => {
+  const { filePaths } = await dialog.showOpenDialog(mainWindow, { title: 'Import theme', properties: ['openFile'], filters: [{ name: 'Theme', extensions: ['json'] }] });
+  if (!filePaths || !filePaths[0]) return null;
+  let parsed;
+  try { parsed = JSON.parse(fs.readFileSync(filePaths[0], 'utf8')); } catch { throw new Error('That file is not a theme'); }
+  const theme = parsed && parsed.type === 'theme' ? parsed.theme : null;
+  if (!theme || typeof theme !== 'object') throw new Error('That file is not a Studio for Elgato theme');
+  if (theme.image && theme.image.data) {
+    const m = /^data:([\w/+.-]+);base64,(.+)$/.exec(theme.image.data);
+    const ext = String(theme.image.ext || '').toLowerCase();
+    if (!m || !IMAGE_TYPES[ext]) throw new Error("The theme's background image is not a supported image");
+    theme.image = { ...theme.image, data: undefined, ext: undefined, url: storeThemeImage(Buffer.from(m[2], 'base64'), ext) };
+  } else if (theme.image) {
+    theme.image = null; // a path from another computer would not exist here
+  }
+  return theme;
+});
+handle('window:zoom', (factor) => {
+  const f = Math.max(0.7, Math.min(1.6, Number(factor) || 1));
+  for (const w of [mainWindow, prompterWindow]) if (w && !w.isDestroyed()) w.webContents.setZoomFactor(f);
+  return f;
 });
 
 handle('devices:rename', (id, name) => {

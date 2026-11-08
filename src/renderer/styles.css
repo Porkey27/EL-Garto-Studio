@@ -13,17 +13,17 @@
 }
 
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 14px/1.4 system-ui, "Inter", "Segoe UI", sans-serif; }
+html, body { margin: 0; height: 100%; background: var(--bg-base, var(--bg)); color: var(--text); font: 14px/1.4 system-ui, "Inter", "Segoe UI", sans-serif; }
 button, input, select, textarea { font: inherit; color: inherit; }
 button {
-  background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer;
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: calc(var(--radius) * .75); padding: 6px 12px; cursor: pointer;
 }
-button:hover { border-color: #444b55; }
-button.primary { background: var(--accent); border-color: var(--accent); }
+button:hover { border-color: color-mix(in srgb, var(--text) 30%, var(--line)); }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent, #fff); }
 button.danger { color: #ff8a8f; }
-button.on { background: #2a3f5f; border-color: var(--accent); }
+button.on { background: color-mix(in srgb, var(--accent) 30%, var(--panel-2)); border-color: var(--accent); }
 button:disabled { opacity: .5; cursor: default; }
-input, select, textarea { background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
+input, select, textarea { background: var(--panel-2); border: 1px solid var(--line); border-radius: calc(var(--radius) * .75); padding: 5px 8px; }
 input[type=range] { padding: 0; accent-color: var(--accent); }
 input[type=checkbox] { accent-color: var(--accent); }
 code { background: var(--panel-2); padding: 1px 4px; border-radius: 4px; font-size: 12px; }
@@ -42,7 +42,7 @@ main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 #topbar { display: flex; gap: 8px; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--panel); }
 #device-picker { min-width: 220px; }
 .badge { padding: 3px 8px; border-radius: 999px; font-size: 12px; }
-.badge.warn { background: #3a2c10; color: var(--warn); }
+.badge.warn { background: color-mix(in srgb, var(--warn) 18%, var(--panel-2)); color: var(--warn); }
 .rec-status { display: flex; align-items: center; gap: 6px; color: var(--rec); font-variant-numeric: tabular-nums; }
 .rec-status .dot, .record .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--rec); display: inline-block; }
 
@@ -129,7 +129,7 @@ label.check { flex-direction: row; align-items: center; gap: 8px; }
 /* Pop-ups from the top bar: device details and signal path */
 .popover {
   position: fixed; z-index: 15; width: 380px; max-width: calc(100vw - 16px); max-height: calc(100vh - 80px); overflow: auto;
-  background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px;
+  background: var(--surface, var(--bg)); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); padding: 14px 16px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, .5); display: flex; flex-direction: column; gap: 10px;
 }
 .popover.wide { width: 660px; }
@@ -156,7 +156,7 @@ label.check { flex-direction: row; align-items: center; gap: 8px; }
 /* Dropdown lists: on Linux the open list takes its colours from the options, not the page's dark
    colour scheme, which left light text on a white or pale-blue background. */
 select, option, optgroup { background-color: var(--panel-2); color: var(--text); }
-option:checked { background-color: var(--accent); color: #fff; }
+option:checked { background-color: var(--accent); color: var(--on-accent, #fff); }
 optgroup { color: var(--muted); font-style: normal; }
 
 /* Firmware updates */
@@ -169,7 +169,7 @@ optgroup { color: var(--muted); font-style: normal; }
 .fw-available { color: var(--text); font-weight: 600; font-size: 13px; }
 button.link { background: none; border: none; color: var(--accent); padding: 2px 4px; }
 .modal { position: fixed; inset: 0; z-index: 30; background: rgba(0, 0, 0, .6); display: flex; align-items: center; justify-content: center; padding: 16px; }
-.modal-box { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; width: 520px; max-width: 100%; max-height: calc(100vh - 32px); overflow: auto; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 20px 50px rgba(0, 0, 0, .6); }
+.modal-box { background: var(--surface, var(--bg)); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); width: 520px; max-width: 100%; max-height: calc(100vh - 32px); overflow: auto; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 20px 50px rgba(0, 0, 0, .6); }
 .modal-box h2 { margin: 0; font-size: 18px; }
 .fw-versions { display: flex; flex-direction: column; gap: 4px; }
 .fw-row { display: grid; grid-template-columns: 80px 1fr 1fr; gap: 8px; }
@@ -185,3 +185,32 @@ button.link { background: none; border: none; color: var(--accent); padding: 2px
 .modal-box progress { width: 100%; }
 .fw-replug { background: var(--panel-2); border: 1px solid var(--warn); border-radius: 8px; padding: 12px; font-weight: 600; }
 .fw-buttons { margin-top: 4px; }
+
+/* Theme background image: a fixed layer behind the app, with optional blur and dimming. */
+html.has-bg-image body::before {
+  content: ''; position: fixed; inset: calc(var(--bg-blur) * -2); z-index: 0; pointer-events: none;
+  background: var(--bg-image) center / var(--bg-size) var(--bg-repeat); filter: blur(var(--bg-blur));
+}
+html.has-bg-image body::after {
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none; background: #000; opacity: var(--bg-dim);
+}
+html.has-bg-image #app { position: relative; z-index: 1; }
+html.has-bg-image #preview-wrap { background: transparent; }
+
+/* Appearance settings */
+.theme-colors { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px 14px; }
+.theme-color { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.theme-color input[type=color] { width: 34px; height: 26px; padding: 1px 2px; cursor: pointer; }
+.theme-swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+.theme-swatch { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px; min-width: 76px; }
+.theme-swatch.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.theme-swatch .chips { display: flex; height: 18px; width: 60px; border-radius: 4px; overflow: hidden; border: 1px solid var(--line); }
+.theme-swatch .chips span { flex: 1; }
+.theme-swatch small { font-size: 11px; }
+.theme-image-preview { width: 160px; aspect-ratio: 16/9; border-radius: calc(var(--radius) * .75); border: 1px solid var(--line); background: center / cover no-repeat var(--panel-2); }
+.theme-slider { display: grid; grid-template-columns: 150px 1fr 48px; align-items: center; gap: 10px; font-size: 13px; }
+.theme-slider output { color: var(--muted); font-size: 12px; text-align: right; }
+/* Override the generic stacked ".settings label" layout for the Appearance controls. */
+.settings label.theme-color { display: flex; flex-direction: row; align-items: center; gap: 8px; }
+.settings label.theme-slider { display: grid; grid-template-columns: 150px minmax(120px, 280px) 48px; align-items: center; gap: 10px; }
+.settings label.theme-slider select { justify-self: start; }
