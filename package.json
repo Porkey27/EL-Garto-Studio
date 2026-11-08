@@ -13,8 +13,8 @@
     "build:native": "node scripts/build-native.js",
     "firmware": "node tools/firmware-update.js",
     "dist": "npm run build:native && electron-builder",
-    "dist:linux": "npm run build:native && electron-builder --linux AppImage deb",
-    "dist:win": "npm run build:native && electron-builder --win nsis"
+    "dist:linux": "npm run build:native && electron-builder --linux AppImage deb tar.gz",
+    "dist:win": "npm run build:native && electron-builder --win nsis zip"
   },
   "dependencies": {
     "vosk-browser": "^0.0.8",
@@ -30,7 +30,8 @@
       "category": "AudioVideo",
       "target": [
         "AppImage",
-        "deb"
+        "deb",
+        "tar.gz"
       ],
       "extraResources": [
         {
@@ -47,18 +48,21 @@
       ],
       "icon": "assets/icon.png",
       "maintainer": "Porkey27 <79101219+Porkey27@users.noreply.github.com>",
-      "synopsis": "Unofficial app for Elgato capture cards and cameras"
+      "synopsis": "Unofficial app for Elgato capture cards and cameras",
+      "artifactName": "studio-for-elgato-${version}-linux-x64.${ext}"
     },
     "deb": {
       "depends": [
         "ffmpeg",
         "v4l-utils"
       ],
-      "afterInstall": "udev/postinst.sh"
+      "afterInstall": "udev/postinst.sh",
+      "artifactName": "studio-for-elgato-${version}-linux-amd64.${ext}"
     },
     "win": {
       "target": [
-        "nsis"
+        "nsis",
+        "zip"
       ],
       "extraResources": [
         {
@@ -70,12 +74,17 @@
           ]
         }
       ],
-      "icon": "assets/icon.ico"
+      "icon": "assets/icon.ico",
+      "artifactName": "studio-for-elgato-${version}-windows-portable.${ext}"
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "studio-for-elgato-${version}-windows-setup.${ext}"
     },
-    "artifactName": "studio-for-elgato-${version}-${os}-${arch}.${ext}"
+    "artifactName": "studio-for-elgato-${version}-${os}-${arch}.${ext}",
+    "appImage": {
+      "artifactName": "studio-for-elgato-${version}-linux.${ext}"
+    }
   }
 }

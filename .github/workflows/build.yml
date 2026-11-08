@@ -26,13 +26,15 @@ jobs:
             os: windows-latest
             dist: dist:win
             files: |
-              dist/*.exe
+              dist/*-windows-setup.exe
+              dist/*-windows-portable.zip
           - name: Linux
             os: ubuntu-22.04
             dist: dist:linux
             files: |
               dist/*.AppImage
               dist/*.deb
+              dist/*.tar.gz
 
     steps:
       - uses: actions/checkout@v4

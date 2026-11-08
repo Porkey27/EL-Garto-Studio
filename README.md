@@ -181,8 +181,19 @@ the card.
 
 ## Automatic builds (GitHub Actions)
 
-`.github/workflows/build.yml` runs the tests, then builds the Windows installer (`.exe`) and the
-Linux packages (`.AppImage` and `.deb`), including the native helpers.
+`.github/workflows/build.yml` runs the tests, then builds these files, each including the native
+helpers:
+
+| File | What it is |
+|---|---|
+| `…-windows-setup.exe` | Windows installer |
+| `…-windows-portable.zip` | Windows, unpacked: extract and run `Studio for Elgato.exe` |
+| `…-linux.AppImage` | Linux, one file that runs on most distros (`chmod +x`, then run) |
+| `…-linux-amd64.deb` | Debian/Ubuntu package (also installs the udev rule) |
+| `…-linux-x64.tar.gz` | Linux, unpacked |
+
+GitHub adds the source code (zip and tar.gz) to every release automatically. The AppImage and the
+`.tar.gz` don't install the udev rule: see "Linux" above for the one-time `udev` command.
 
 * **Every push to `main`:** the **Latest build** pre-release on the Releases page is replaced with
   fresh installers from that commit.
