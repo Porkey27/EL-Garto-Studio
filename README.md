@@ -181,12 +181,14 @@ the card.
 
 ## Automatic builds (GitHub Actions)
 
-`.github/workflows/build.yml` runs on every push to `main` and on pull requests. It runs the tests,
-then builds the Windows installer (`.exe`) and the Linux packages (`.AppImage` and `.deb`),
-including the native helpers. Download them from the run's **Artifacts** section on the Actions
-tab.
+`.github/workflows/build.yml` runs the tests, then builds the Windows installer (`.exe`) and the
+Linux packages (`.AppImage` and `.deb`), including the native helpers.
 
-To publish a release, push a version tag. The installers are then attached to a GitHub release:
+* **Every push to `main`:** the **Latest build** pre-release on the Releases page is replaced with
+  fresh installers from that commit.
+* **Pull requests:** the installers are attached to the run (Actions tab → the run → Artifacts).
+
+To publish a permanent, numbered release, push a version tag:
 
 ```bash
 git tag v0.1.0
