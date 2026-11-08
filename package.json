@@ -1,0 +1,81 @@
+{
+  "name": "elgato-studio-linux",
+  "productName": "Studio for Elgato",
+  "version": "0.1.0",
+  "description": "Unofficial cross-platform (Linux and Windows) companion app for Elgato capture cards, Facecams and Prompter",
+  "author": "Porkey27",
+  "homepage": "https://github.com/Porkey27/Elgato-Studio",
+  "license": "MIT",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test \"test/*.test.js\"",
+    "build:native": "node scripts/build-native.js",
+    "firmware": "node tools/firmware-update.js",
+    "dist": "npm run build:native && electron-builder",
+    "dist:linux": "npm run build:native && electron-builder --linux AppImage deb",
+    "dist:win": "npm run build:native && electron-builder --win nsis"
+  },
+  "dependencies": {
+    "vosk-browser": "^0.0.8",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "electron": "^38.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "io.github.elgato-studio-linux",
+    "linux": {
+      "category": "AudioVideo",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "extraResources": [
+        {
+          "from": "native/build",
+          "to": "native",
+          "filter": [
+            "egctl"
+          ]
+        },
+        {
+          "from": "udev",
+          "to": "udev"
+        }
+      ],
+      "icon": "assets/icon.png",
+      "maintainer": "Porkey27 <79101219+Porkey27@users.noreply.github.com>",
+      "synopsis": "Unofficial app for Elgato capture cards and cameras"
+    },
+    "deb": {
+      "depends": [
+        "ffmpeg",
+        "v4l-utils"
+      ],
+      "afterInstall": "udev/postinst.sh"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "extraResources": [
+        {
+          "from": "native/build",
+          "to": "native",
+          "filter": [
+            "egctl.exe",
+            "egcap.exe"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "artifactName": "studio-for-elgato-${version}-${os}-${arch}.${ext}"
+  }
+}

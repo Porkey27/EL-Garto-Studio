@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' file: data: blob:; media-src 'self' file: blob: mediastream:; connect-src 'self' wss://irc-ws.chat.twitch.tv wss://ws-us2.pusher.com https://www.googleapis.com https://kick.com https://alphacephei.com; script-src 'self' 'wasm-unsafe-eval' blob:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'">
+  <title>Elgato Studio</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <nav id="sidebar">
+      <div class="brand">Studio</div>
+      <button class="nav active" data-view="live" title="Live">Live</button>
+      <button class="nav" data-view="library" title="Library">Library</button>
+      <button class="nav" data-view="prompter" title="Prompter">Prompter</button>
+      <button class="nav" data-view="settings" title="Settings">Settings</button>
+    </nav>
+
+    <main>
+      <header id="topbar">
+        <select id="device-picker" aria-label="Device"></select>
+        <button id="btn-device-info" class="icon" title="Device details" aria-label="Device details">⚙</button>
+        <select id="format-picker" aria-label="Format"></select>
+        <select id="audio-picker" aria-label="Audio source"></select>
+        <span class="spacer"></span>
+        <button id="btn-signal" title="Signal path">No signal</button>
+        <span id="usb-warning" class="badge warn" hidden></span>
+        <span id="rec-status" class="rec-status" hidden><span class="dot"></span><span id="rec-time">00:00:00</span> · <span id="rec-size">0 MB</span></span>
+      </header>
+
+      <!-- Live -->
+      <section id="view-live" class="view active">
+        <div class="stage">
+          <div id="preview-wrap">
+            <video id="preview" autoplay muted playsinline></video>
+            <div id="multiview" hidden></div>
+            <div id="no-signal" class="overlay-msg" hidden>No signal</div>
+            <div id="hud" class="hud" hidden></div>
+            <div id="frame-grid" class="frame-grid" hidden></div>
+          </div>
+          <div id="transport">
+            <button id="btn-record" class="record" title="Record (Ctrl+Shift+R)"><span class="dot"></span><span class="label">Record</span></button>
+            <button id="btn-snapshot" title="Snapshot (Ctrl+Shift+S)">Snapshot</button>
+            <button id="btn-flashback" title="Save Flashback (Ctrl+Shift+F)" hidden>Save Flashback</button>
+            <span class="spacer"></span>
+            <button id="btn-mute" title="Mute preview audio">Mute</button>
+            <input id="volume" type="range" min="0" max="100" value="100" aria-label="Preview volume">
+            <div class="meter" aria-label="Audio level"><div id="meter-l"></div><div id="meter-r"></div></div>
+            <button id="btn-hud" title="Camera HUD">HUD</button>
+            <button id="btn-grid" title="Framing grid">Grid</button>
+            <button id="btn-multiview" title="Show all devices">Multiview</button>
+            <button id="btn-vcam" title="Virtual camera (v4l2loopback)">Virtual cam</button>
+            <button id="btn-vmic" title="Virtual microphone: the app's audio as a microphone for Discord, OBS and browsers" hidden>Virtual mic</button>
+            <button id="btn-fullscreen" title="Fullscreen">Fullscreen</button>
+          </div>
+        </div>
+        <aside id="device-panel">
+          <div class="panel-head">
+            <h2 id="device-title">No device</h2>
+            <div id="device-sub" class="muted"></div>
+          </div>
+          <div id="rec-section" class="group"></div>
+          <div id="presets" class="presets" hidden>
+            <select id="preset-picker"><option value="">Presets…</option></select>
+            <button id="btn-preset-save">Save</button>
+            <button id="btn-preset-delete" title="Delete preset">✕</button>
+          </div>
+          <div id="device-controls"></div>
+          <div id="edid-section" class="group" hidden>
+            <h3>EDID</h3>
+            <div class="ctrl"><label for="edid-custom">Custom EDID</label><input id="edid-custom" type="checkbox"></div>
+            <select id="edid-preset" aria-label="EDID preset"></select>
+            <progress id="edid-progress" max="1" value="0" hidden></progress>
+            <div id="edid-status" class="small muted"></div>
+            <div class="row"><button id="btn-edid-backup">Back up EDID…</button></div>
+          </div>
+          <div id="device-info" class="group muted small"></div>
+        </aside>
+      </section>
+
+      <!-- Library -->
+      <section id="view-library" class="view">
+        <div class="toolbar">
+          <h2>Recordings</h2>
+          <span class="spacer"></span>
+          <select id="lib-filter"><option value="all">All</option><option value="video">Videos</option><option value="snapshot">Snapshots</option></select>
+          <button id="btn-open-folder">Open folder</button>
+        </div>
+        <div id="library-grid" class="grid"></div>
+        <div id="player" class="player" hidden>
+          <div class="player-inner">
+            <video id="player-video" controls></video>
+            <img id="player-image" alt="" hidden>
+            <div class="row"><span id="player-name"></span><span class="spacer"></span><button id="btn-player-close">Close</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Prompter -->
+      <section id="view-prompter" class="view">
+        <div class="prompter-layout">
+          <aside class="scripts">
+            <div class="toolbar"><h2>Scripts</h2><span class="spacer"></span><button id="btn-script-new">New</button><button id="btn-script-import">Import</button></div>
+            <ul id="script-list"></ul>
+          </aside>
+          <div class="editor">
+            <input id="script-title" placeholder="Script title">
+            <textarea id="script-text" placeholder="Write or paste your script…&#10;&#10;Lines starting with [ ] are shown as cues, not read."></textarea>
+            <div class="row small muted"><span id="script-stats"></span><span class="spacer"></span><button id="btn-script-export">Export</button><button id="btn-script-delete" class="danger">Delete</button></div>
+          </div>
+          <aside class="prompter-controls">
+            <div class="group">
+              <h3>Prompter</h3>
+              <label>Display <select id="prompter-display"></select></label>
+              <div class="row"><button id="btn-prompter-open" class="primary">Open prompter</button><button id="btn-prompter-close">Close</button></div>
+              <div class="row"><button id="btn-p-start" title="Back to start">⏮</button><button id="btn-p-play" class="primary">Play</button></div>
+              <label>Speed <input id="p-speed" type="range" min="1" max="10" step="0.5"></label>
+              <label>Font size <input id="p-font" type="range" min="24" max="160"></label>
+              <label>Line height <input id="p-line" type="range" min="1" max="2.2" step="0.1"></label>
+              <label>Margins <input id="p-margin" type="range" min="0" max="35"></label>
+              <label>Cue line <input id="p-cue" type="range" min="0.1" max="0.9" step="0.01"></label>
+              <label>Countdown (s) <input id="p-countdown" type="number" min="0" max="10"></label>
+              <label>Font <select id="p-fontfamily"><option value="sans-serif">Sans</option><option value="serif">Serif</option><option value="monospace">Mono</option><option value="'OpenDyslexic', sans-serif">OpenDyslexic</option></select></label>
+              <label class="check"><input id="p-mirror" type="checkbox"> Mirror (beam splitter)</label>
+              <label class="check"><input id="p-camera" type="checkbox"> Show camera behind text</label>
+            </div>
+            <div class="group">
+              <h3>VoiceSync</h3>
+              <p class="small muted">Scrolls along as you speak. Runs offline with a Vosk speech model (about 40 MB, downloaded once).</p>
+              <label class="check"><input id="p-voicesync" type="checkbox"> Follow my voice</label>
+              <div id="voicesync-status" class="small muted"></div>
+            </div>
+            <div class="group">
+              <h3>Chat</h3>
+              <label>Twitch channel <input id="chat-twitch" placeholder="channel name"></label>
+              <label>Kick channel <input id="chat-kick" placeholder="channel name"></label>
+              <label>YouTube live video ID <input id="chat-yt-video" placeholder="e.g. dQw4w9WgXcQ"></label>
+              <label>YouTube API key <input id="chat-yt-key" type="password" placeholder="Data API v3 key"></label>
+              <div class="row"><button id="btn-chat-connect">Connect</button><button id="btn-chat-disconnect">Disconnect</button></div>
+              <label class="check"><input id="p-chat-overlay" type="checkbox"> Show chat on prompter</label>
+              <div id="chat-status" class="small muted"></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- Settings -->
+      <section id="view-settings" class="view">
+        <div class="settings">
+          <div class="group">
+            <h3>Recording</h3>
+            <label>Recordings folder <span class="row"><input id="s-dir" readonly><button id="btn-s-dir">Change…</button></span></label>
+            <label>Container <select id="s-container"><option value="mp4">MP4</option><option value="mkv">MKV</option><option value="webm">WebM</option></select></label>
+            <label>Audio bitrate (kbps) <input id="s-abr" type="number" min="64" max="512"></label>
+            <label>Flashback length (minutes, 0 = off) <input id="s-flashback" type="number" min="0" max="60"></label>
+          </div>
+          <div class="group" id="vcam-settings">
+            <h3>Virtual camera</h3>
+            <p class="small muted">Needs the <code>v4l2loopback</code> kernel module: <code>sudo modprobe v4l2loopback video_nr=10 card_label="Studio Virtual Camera" exclusive_caps=1</code></p>
+            <label>Loopback device <select id="s-vcam"></select></label>
+          </div>
+          <div class="group">
+            <h3>Stream Deck / remote control</h3>
+            <p class="small muted">Uses the same local WebSocket API as Elgato Studio on Windows.</p>
+            <label class="check"><input id="s-ws-limit" type="checkbox"> Only allow Stream Deck to connect</label>
+            <div id="s-ws-port" class="small muted"></div>
+          </div>
+          <div class="group">
+            <h3>Shortcuts (global)</h3>
+            <label>Record <input id="s-sc-record" placeholder="CommandOrControl+Shift+R"></label>
+            <label>Snapshot <input id="s-sc-snapshot" placeholder="CommandOrControl+Shift+S"></label>
+            <label>Save Flashback <input id="s-sc-flashback" placeholder="CommandOrControl+Shift+F"></label>
+            <label>Prompter play/pause <input id="s-sc-prompter" placeholder="CommandOrControl+Shift+P"></label>
+          </div>
+          <div class="group">
+            <h3>About</h3>
+            <div id="s-about" class="small muted"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div id="pop-info" class="popover" hidden></div>
+  <div id="pop-signal" class="popover wide" hidden></div>
+  <div id="toast" class="toast" hidden></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

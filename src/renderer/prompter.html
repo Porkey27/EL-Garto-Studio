@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; media-src 'self' mediastream: blob:; img-src 'self' data:; script-src 'self' 'wasm-unsafe-eval' blob:; worker-src 'self' blob:; connect-src 'self' file: blob:; style-src 'self' 'unsafe-inline'">
+  <title>Prompter</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #000; color: #fff; overflow: hidden; font-family: sans-serif; cursor: none; }
+    body:hover { cursor: default; }
+    #camera { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .35; }
+    #flip { position: fixed; inset: 0; }
+    #flip.mirror { transform: scaleX(-1); }
+    #viewport { position: absolute; inset: 0; overflow: hidden; }
+    #text { position: absolute; left: 0; right: 0; white-space: pre-wrap; word-wrap: break-word; will-change: transform; }
+    #text .cue { opacity: .45; font-style: italic; }
+    #text .w.done { opacity: .5; }
+    #cueline { position: absolute; left: 0; right: 0; height: 0; border-top: 2px solid #2d7ff9aa; pointer-events: none; }
+    #cueline::before { content: '▶'; position: absolute; left: 6px; top: -14px; color: #2d7ff9; font-size: 18px; }
+    #countdown { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 30vh; font-weight: 700; background: #000a; }
+    #chat { position: fixed; right: 0; top: 0; bottom: 0; width: 26%; overflow: hidden; display: flex; flex-direction: column-reverse; padding: 10px; gap: 6px; background: linear-gradient(90deg, transparent, #000c 20%); font-size: 22px; }
+    #chat .m b { margin-right: 6px; }
+    #chat .m .p { font-size: 12px; opacity: .6; margin-right: 6px; text-transform: uppercase; }
+    #progress { position: fixed; left: 0; bottom: 0; height: 4px; background: #2d7ff9; width: 0; }
+    #status { position: fixed; left: 10px; bottom: 10px; font-size: 13px; opacity: .6; }
+  </style>
+</head>
+<body>
+  <video id="camera" autoplay muted playsinline hidden></video>
+  <div id="flip">
+    <div id="viewport"><div id="text"></div></div>
+    <div id="cueline"></div>
+    <div id="chat" hidden></div>
+  </div>
+  <div id="countdown" hidden></div>
+  <div id="progress"></div>
+  <div id="status"></div>
+  <script src="../../node_modules/vosk-browser/dist/vosk.js"></script>
+  <script type="module" src="prompter.js"></script>
+</body>
+</html>

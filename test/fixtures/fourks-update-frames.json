@@ -1,0 +1,24 @@
+{
+  "source": "USBPcap of Elgato Studio 2.0.0.3364 updating a Game Capture 4K S (0fd9:00af) from Base 25.07.23 / MCU 25.12.03 to Base 26.08.25 / MCU 26.09.07, 2026-11-08",
+  "firmware": {
+    "mcu": "FW_4K_S_MCU_26.09.07.bin",
+    "base": "FW_4K_S_Base_26.08.25.bin"
+  },
+  "mcuChunks": {
+    "count": 300,
+    "frameLen": 255,
+    "sha256": "8c905902d17daed68e2f214b76e8c45024023046e117f459b09447c45d4d9ba0"
+  },
+  "mcuCommands": [
+    "0609066605ab03123458",
+    "060d066609aa030d1204865406aa",
+    "0605066c01ac",
+    "0605066c01a2",
+    "0605066c01a3",
+    "0605066c01a4"
+  ],
+  "flashFrames": {
+    "count": 130,
+    "sha256": "a111cd862f9ff5cc1ef76a7b36ef290a3651b4650c0345ae8cde174ef0cf4a76"
+  }
+}
