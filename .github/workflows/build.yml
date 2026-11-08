@@ -18,6 +18,7 @@ jobs:
   build:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -56,7 +57,7 @@ jobs:
 
       # Builds the native helpers (MSVC on Windows, cc on Linux), then the installers.
       - name: Build
-        run: npm run ${{ matrix.dist }} -- --publish never
+        run: npm run ${{ matrix.dist }}
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
 
@@ -71,6 +72,7 @@ jobs:
     needs: build
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/download-artifact@v4
         with:
