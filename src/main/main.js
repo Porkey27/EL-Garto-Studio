@@ -21,6 +21,10 @@ const hdr = require('./hdr');
 
 // V4L2 capture needs these on some distros; harmless elsewhere.
 app.commandLine.appendSwitch('enable-features', 'WebRTCPipeWireCapturer,VaapiVideoDecoder,VaapiVideoEncoder');
+// Windows: play audio from the app's own process. Chromium normally plays it from a separate
+// "audio service" helper process, so apps that capture a window's sound (Discord's screen share,
+// OBS's Application Audio Capture) find no audio in El-Gato Studio's process and stream silence.
+if (process.platform === 'win32') app.commandLine.appendSwitch('disable-features', 'AudioServiceOutOfProcess');
 
 // Windows groups taskbar buttons and picks their icon by this ID (matches build.appId).
 if (process.platform === 'win32') app.setAppUserModelId('io.github.porkey27.el-gato-studio');
