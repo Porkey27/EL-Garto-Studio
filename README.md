@@ -211,7 +211,7 @@ git push origin v0.1.0
 ```
 
 Bump `version` in `package.json` before tagging a new release. If the repository isn't
-`github.com/Porkey27/Elgato-Studio`, update `homepage` in `package.json`, which the `.deb`
+`github.com/Porkey27/Elgato-Studio-Linux`, update `homepage` in `package.json`, which the `.deb`
 package uses.
 
 ## Development

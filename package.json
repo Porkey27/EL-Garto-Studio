@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Unofficial cross-platform (Linux and Windows) companion app for Elgato capture cards, Facecams and Prompter",
   "author": "Porkey27",
-  "homepage": "https://github.com/Porkey27/Elgato-Studio",
+  "homepage": "https://github.com/Porkey27/Elgato-Studio-Linux",
   "license": "MIT",
   "main": "src/main/main.js",
   "scripts": {
