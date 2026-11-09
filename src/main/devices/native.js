@@ -9,7 +9,7 @@ function helperPath() {
   const candidates = [
     process.resourcesPath && path.join(process.resourcesPath, 'native', 'egctl'),
     path.join(__dirname, '../../../native/build/egctl'),
-    '/usr/lib/el-gato-studio/egctl',
+    '/usr/lib/el-garto-studio/egctl',
   ].filter(Boolean);
   return candidates.find((p) => fs.existsSync(p)) || null;
 }

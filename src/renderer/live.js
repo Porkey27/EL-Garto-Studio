@@ -95,7 +95,7 @@ async function ensurePermission() {
 export async function listAudioInputs() {
   await ensurePermission();
   return (await navigator.mediaDevices.enumerateDevices())
-    .filter((d) => d.kind === 'audioinput' && !/(Studio|El-Gato) Virtual/i.test(d.label)); // our own virtual mic would loop
+    .filter((d) => d.kind === 'audioinput' && !/(Studio|El-Gato|El-Garto) Virtual/i.test(d.label)); // our own virtual mic would loop
 }
 
 function stopStream(s) {
@@ -519,7 +519,7 @@ export async function toggleVirtualCamera() {
   }
   if (!state.stream) return;
   const dev = state.settings.vcamDevice || (await studio.call('vcam:devices'))[0];
-  if (!dev) { toast('No virtual camera device found. Install v4l2loopback and run: sudo modprobe v4l2loopback video_nr=10 card_label="El-Gato Virtual Camera" exclusive_caps=1', true); return; }
+  if (!dev) { toast('No virtual camera device found. Install v4l2loopback and run: sudo modprobe v4l2loopback video_nr=10 card_label="El-Garto Virtual Camera" exclusive_caps=1', true); return; }
   // Feed a 1080p/30 copy of the preview: that's what Discord and browsers use, and software VP8
   // encoding of a 4K/60 source can't keep up.
   const src = state.stream.getVideoTracks()[0];
@@ -543,7 +543,7 @@ export async function toggleVirtualCamera() {
 }
 
 // Virtual microphone (Linux): the app's audio, at full level like recordings, played into the
-// "El-Gato Virtual Audio" sink, whose remapped source Discord/OBS see as "El-Gato Virtual Microphone".
+// "El-Garto Virtual Audio" sink, whose remapped source Discord/OBS see as "El-Garto Virtual Microphone".
 function rebindVirtualMic() {
   const vm = state.vmic;
   if (!vm || !state.recordDest) return;

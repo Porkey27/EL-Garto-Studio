@@ -11,12 +11,12 @@ const crypto = require('crypto');
 
 const MANIFEST_URL = 'https://gc-updates.elgato.com/windows/estw-update/final/device-update-check.json.php'
   + '?osName=Windows&osVersion=10.0.26300.0&osPlatform=x64&appVersion=2.0.0.3364&appPlatform=x64&appLanguage=en-US';
-const CACHE = path.join(os.homedir(), '.cache', 'el-gato-studio');
+const CACHE = path.join(os.homedir(), '.cache', 'el-garto-studio');
 const MANIFEST_MAX_AGE_MS = 6 * 3600 * 1000;
 
 function get(url, redirects = 5) {
   return new Promise((resolve, reject) => {
-    https.get(url, { headers: { 'User-Agent': 'el-gato-studio' }, timeout: 20000 }, (res) => {
+    https.get(url, { headers: { 'User-Agent': 'el-garto-studio' }, timeout: 20000 }, (res) => {
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location && redirects > 0) {
         res.resume();
         resolve(get(new URL(res.headers.location, url).toString(), redirects - 1));

@@ -1,16 +1,16 @@
 'use strict';
-// Linux virtual microphone: a null sink the app plays its audio into ("El-Gato Virtual Audio") and a
-// source remapped from that sink's monitor ("El-Gato Virtual Microphone"), which Discord, OBS and
+// Linux virtual microphone: a null sink the app plays its audio into ("El-Garto Virtual Audio") and a
+// source remapped from that sink's monitor ("El-Garto Virtual Microphone"), which Discord, OBS and
 // browsers list as an ordinary microphone. Works with PulseAudio and with PipeWire (pipewire-pulse),
 // through pactl.
 
 const { execFile } = require('child_process');
 
-const SINK = 'el_gato_virtual_audio';
-const OLD_NAMES = ['studio_virtual_audio', 'studio_virtual_mic']; // from before the rename, removed if left over
-const SOURCE = 'el_gato_virtual_mic';
-const SINK_LABEL = 'El-Gato Virtual Audio';
-const SOURCE_LABEL = 'El-Gato Virtual Microphone';
+const SINK = 'el_garto_virtual_audio';
+const OLD_NAMES = ['studio_virtual_audio', 'studio_virtual_mic', 'el_gato_virtual_audio', 'el_gato_virtual_mic']; // from before the rename, removed if left over
+const SOURCE = 'el_garto_virtual_mic';
+const SINK_LABEL = 'El-Garto Virtual Audio';
+const SOURCE_LABEL = 'El-Garto Virtual Microphone';
 
 function pactl(...args) {
   return new Promise((resolve, reject) => {
@@ -29,8 +29,8 @@ function pactl(...args) {
 async function ourModules() {
   const out = await pactl('list', 'short', 'modules');
   return out.split('\n').map((l) => l.split('\t')).filter((c) => c.length >= 3)
-    .filter(([, name, args]) => (name === 'module-null-sink' && [SINK, OLD_NAMES[0]].some((n) => args.includes(`sink_name=${n}`)))
-      || (name === 'module-remap-source' && [SOURCE, OLD_NAMES[1]].some((n) => args.includes(`source_name=${n}`))))
+    .filter(([, name, args]) => (name === 'module-null-sink' && [SINK, OLD_NAMES[0], OLD_NAMES[2]].some((n) => args.includes(`sink_name=${n}`)))
+      || (name === 'module-remap-source' && [SOURCE, OLD_NAMES[1], OLD_NAMES[3]].some((n) => args.includes(`source_name=${n}`))))
     .map(([id, name]) => ({ id, name }));
 }
 
