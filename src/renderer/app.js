@@ -140,6 +140,7 @@ async function initSettings() {
   bind('#s-abr', 'audioBitrateKbps', Number);
   bind('#s-flashback', 'flashbackMinutes', Number);
   bind('#s-ws-limit', 'limitWebSocketToStreamDeck', Boolean, 'checked');
+  bind('#s-tray', 'keepRunningInTray', Boolean, 'checked');
 
   const vcams = await studio.call('vcam:devices').catch(() => []);
   const vsel = $('#s-vcam');

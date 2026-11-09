@@ -322,7 +322,12 @@ function createMainWindow() {
   }
   mainWindow.on('enter-full-screen', () => { preview.isFullscreen = true; rpc.notify('previewInformationChanged', { isFullscreen: true }); });
   mainWindow.on('leave-full-screen', () => { preview.isFullscreen = false; rpc.notify('previewInformationChanged', { isFullscreen: false }); });
-  mainWindow.on('closed', () => { mainWindow = null; });
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+    // Closing the main window quits the app (prompter window included), unless the user chose
+    // to keep it running in the tray.
+    if (!(settings.get('keepRunningInTray') && tray)) app.quit();
+  });
 }
 
 function openPrompterWindow(displayId) {
@@ -372,7 +377,7 @@ function createTray() {
     { label: 'Take snapshot', click: () => send('remote:snapshot') },
     { label: 'Save Flashback', enabled: settings.get('flashbackMinutes') > 0, click: () => send('remote:flashback') },
     { type: 'separator' },
-    { label: 'Show Studio', click: () => (mainWindow ? mainWindow.show() : createMainWindow()) },
+    { label: 'Show El-Garto Studio', click: () => (mainWindow ? mainWindow.show() : createMainWindow()) },
     { label: 'Open prompter', click: () => openPrompterWindow() },
     { label: 'Open recordings folder', click: () => shell.openPath(library.dir()) },
     { type: 'separator' },
@@ -830,9 +835,9 @@ if (!app.requestSingleInstanceLock()) {
     registerShortcuts();
   });
 
-  app.on('window-all-closed', (e) => {
-    // Keep running in the tray (like Studio on Windows) unless no tray is available.
-    if (!tray) app.quit();
+  app.on('window-all-closed', () => {
+    // Keep running in the tray only when the user asked for it (Settings) and a tray exists.
+    if (!(settings.get('keepRunningInTray') && tray)) app.quit();
   });
 
   // A GPU driver reset (seen with AMD drivers: "Camera texture device lost") kills Chromium's GPU

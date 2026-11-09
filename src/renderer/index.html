@@ -155,6 +155,11 @@
             <label>Audio bitrate (kbps) <input id="s-abr" type="number" min="64" max="512"></label>
             <label>Flashback length (minutes, 0 = off) <input id="s-flashback" type="number" min="0" max="60"></label>
           </div>
+          <div class="group">
+            <h3>Window</h3>
+            <label class="check"><input id="s-tray" type="checkbox"> Keep running in the tray when the window is closed</label>
+            <p class="small muted">Off: the X button quits the app. On: the app keeps running in the tray (for Stream Deck and global shortcuts); quit it from the tray icon.</p>
+          </div>
           <div class="group" id="vcam-settings">
             <h3>Virtual camera</h3>
             <p class="small muted">Needs the <code>v4l2loopback</code> kernel module: <code>sudo modprobe v4l2loopback video_nr=10 card_label="El-Garto Virtual Camera" exclusive_caps=1</code></p>

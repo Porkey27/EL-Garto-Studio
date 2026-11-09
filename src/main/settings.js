@@ -24,6 +24,7 @@ const DEFAULTS = {
   lastDeviceId: null,
   devicePresets: {},
   deviceNames: {},
+  keepRunningInTray: false, // false: closing the main window quits the app
   theme: null, // see src/renderer/theme.js (null = the default dark theme)
   lastCustomEdid: {},
   framePresets: {},
