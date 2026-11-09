@@ -20,12 +20,17 @@ const { FirmwareFlow } = require('./firmware/flow');
 const hdr = require('./hdr');
 
 // V4L2 capture needs these on some distros; harmless elsewhere.
-app.commandLine.appendSwitch('enable-features', 'WebRTCPipeWireCapturer,VaapiVideoDecoder,VaapiVideoEncoder');
+app.commandLine.appendSwitch('enable-features', ['WebRTCPipeWireCapturer,VaapiVideoDecoder,VaapiVideoEncoder', process.env.EGS_ENABLE_FEATURES].filter(Boolean).join(','));
 // Play audio from the app's own process, labelled with the app's name. Chromium normally plays it
 // from a separate "audio service" helper process (and on Linux labels the stream "Chromium"), so
 // apps that capture a shared window's sound (Discord's screen share, OBS's Application Audio
 // Capture) can't tie the sound to El-Garto Studio's window and stream silence.
-app.commandLine.appendSwitch('disable-features', 'AudioServiceOutOfProcess');
+// Windows: Chromium's D3D11 camera-capture path delivered 4K60 MJPEG from the 4K S at ~5 fps with
+// ~450 ms delay (measured), and was behind "Camera texture device lost" GPU resets. Without it the
+// same 4K60 stream runs at 60 fps with ~9 ms capture-to-display at ~10% CPU.
+// (EGS_DISABLE_FEATURES / EGS_ENABLE_FEATURES add Chromium features for testing.)
+app.commandLine.appendSwitch('disable-features', ['AudioServiceOutOfProcess',
+  process.platform === 'win32' && 'MediaFoundationD3D11VideoCapture', process.env.EGS_DISABLE_FEATURES].filter(Boolean).join(','));
 if (process.platform === 'linux') {
   // libpulse (also used through PipeWire's pulse layer) applies these to every stream we open.
   process.env.PULSE_PROP_OVERRIDE = 'application.name="El-Garto Studio" application.icon_name="el-garto-studio"';
