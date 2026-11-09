@@ -21,10 +21,15 @@ const hdr = require('./hdr');
 
 // V4L2 capture needs these on some distros; harmless elsewhere.
 app.commandLine.appendSwitch('enable-features', 'WebRTCPipeWireCapturer,VaapiVideoDecoder,VaapiVideoEncoder');
-// Windows: play audio from the app's own process. Chromium normally plays it from a separate
-// "audio service" helper process, so apps that capture a window's sound (Discord's screen share,
-// OBS's Application Audio Capture) find no audio in El-Garto Studio's process and stream silence.
-if (process.platform === 'win32') app.commandLine.appendSwitch('disable-features', 'AudioServiceOutOfProcess');
+// Play audio from the app's own process, labelled with the app's name. Chromium normally plays it
+// from a separate "audio service" helper process (and on Linux labels the stream "Chromium"), so
+// apps that capture a shared window's sound (Discord's screen share, OBS's Application Audio
+// Capture) can't tie the sound to El-Garto Studio's window and stream silence.
+app.commandLine.appendSwitch('disable-features', 'AudioServiceOutOfProcess');
+if (process.platform === 'linux') {
+  // libpulse (also used through PipeWire's pulse layer) applies these to every stream we open.
+  process.env.PULSE_PROP_OVERRIDE = 'application.name="El-Garto Studio" application.icon_name="el-garto-studio"';
+}
 
 // Windows groups taskbar buttons and picks their icon by this ID (matches build.appId).
 if (process.platform === 'win32') app.setAppUserModelId('io.github.porkey27.el-garto-studio');

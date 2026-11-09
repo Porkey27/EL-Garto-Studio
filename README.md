@@ -99,7 +99,7 @@ sudo modprobe v4l2loopback video_nr=10 card_label="El-Garto Virtual Camera" excl
 |---|---|---|---|
 | Live | Preview with resolution/frame-rate picker, fullscreen, framing grid | ✅ | ✅ |
 | Live | Audio monitoring with volume, mute, level meters, audio source picker | ✅ | ✅ |
-| Live | Preview audio can be captured by Discord's screen share and OBS's Application Audio Capture, like OBS's own audio | via Virtual mic | ✅ |
+| Live | Preview audio can be captured by Discord's screen share and OBS's Application Audio Capture, like OBS's own audio | ✅ (or the Virtual mic) | ✅ |
 | Live | Recording to MP4/MKV/WebM, snapshots, Flashback replay buffer, multiview | ✅ | ✅ |
 | Live | Recording options as in Studio: max resolution, max frame rate, quality with an MB/min estimate, codec (H.264/HEVC/AV1/VP9, whichever the system can encode) | ✅ | ✅ |
 | Live | HDR recording: HDR inputs recorded as 10-bit HEVC Main 10 tagged HDR10/HLG (GPU encoder: AMD, NVIDIA or Intel, else x265), with an SDR preview while recording; SDR/HDR shown in the signal pop-up | — (planned) | ✅ tested (4K S, HDR source) |
