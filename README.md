@@ -191,7 +191,7 @@ helpers:
 | `…-windows-setup.exe` | Windows installer |
 | `…-windows-portable.zip` | Windows, unpacked: extract and run `El-Garto Studio.exe` |
 | `…-linux.AppImage` | Linux, one file that runs on most distros (`chmod +x`, then run) |
-| `…-linux-amd64.deb` | Debian/Ubuntu package (also installs the udev rule) |
+| `…-linux-amd64.deb` | Debian/Ubuntu package: installs its dependencies, the `el-garto-studio` command, the udev rule and (Ubuntu 24.04+) the AppArmor profile |
 | `…-linux-x64.tar.gz` | Linux, unpacked |
 
 GitHub adds the source code (zip and tar.gz) to every release automatically. The AppImage and the

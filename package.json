@@ -43,7 +43,10 @@
         },
         {
           "from": "udev",
-          "to": "udev"
+          "to": "udev",
+          "filter": [
+            "*.rules"
+          ]
         }
       ],
       "icon": "assets/icon.png",
@@ -53,11 +56,21 @@
     },
     "deb": {
       "depends": [
+        "libgtk-3-0",
+        "libnotify4",
+        "libnss3",
+        "libxss1",
+        "libxtst6",
+        "xdg-utils",
+        "libatspi2.0-0",
+        "libuuid1",
+        "libsecret-1-0",
         "ffmpeg",
         "v4l-utils"
       ],
-      "afterInstall": "udev/postinst.sh",
-      "artifactName": "el-garto-studio-${version}-linux-amd64.${ext}"
+      "afterInstall": "udev/after-install.tpl",
+      "artifactName": "el-garto-studio-${version}-linux-amd64.${ext}",
+      "afterRemove": "udev/after-remove.tpl"
     },
     "win": {
       "target": [
