@@ -29,6 +29,10 @@ app.commandLine.appendSwitch('enable-features', ['WebRTCPipeWireCapturer,VaapiVi
 // ~450 ms delay (measured), and was behind "Camera texture device lost" GPU resets. Without it the
 // same 4K60 stream runs at 60 fps with ~9 ms capture-to-display at ~10% CPU.
 // (EGS_DISABLE_FEATURES / EGS_ENABLE_FEATURES add Chromium features for testing.)
+// Windows: don't hand the preview video to the GPU's hardware overlay planes (MPO). Chromium
+// promotes fullscreen video to an overlay, and on AMD drivers that repeatedly reset the GPU
+// driver when the preview went fullscreen. Normal composition is plenty for one video.
+if (process.platform === 'win32') app.commandLine.appendSwitch('disable-direct-composition-video-overlays');
 app.commandLine.appendSwitch('disable-features', ['AudioServiceOutOfProcess',
   process.platform === 'win32' && 'MediaFoundationD3D11VideoCapture', process.env.EGS_DISABLE_FEATURES].filter(Boolean).join(','));
 if (process.platform === 'linux') {
